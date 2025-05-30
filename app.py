@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 from datetime import datetime
 
-from src.agent import TrenchCryptoAgent
+from src.agent import CryptoAgent
 from src.models import CryptoNewsResponse, QueryRequest
 from config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, LOG_LEVEL
 
@@ -14,8 +14,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
-    title="TrenchAI",
-    description="get ai data",
+    title="Crypto Agent",
+    description="A Langchain crypto Search bot, capable of using tools to access news, articles and trending topics. Using the Gemini API, and custom defined tools.",
     version="1.0.0"
 )
 
@@ -27,7 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-crypto_agent = TrenchCryptoAgent(
+crypto_agent = CryptoAgent(
     redis_host=REDIS_HOST, 
     redis_port=REDIS_PORT,
     redis_password=REDIS_PASSWORD
@@ -37,7 +37,7 @@ crypto_agent = TrenchCryptoAgent(
 async def root():
     return {
         "status": "online",
-        "message": "TrenchAI is running",
+        "message": "Crypto Agent is running",
         "docs": "/docs",
         "version": "1.0.0"
     }

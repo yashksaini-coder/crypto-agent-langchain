@@ -8,8 +8,8 @@ It leverages LLMs and a suite of specialized tools to deliver actionable insight
 ## 1. Clone the Repository
 
 ```sh
-git clone <your-repo-url>
-cd trench-ai
+git clone https://github.com/deployer117/global-agent-hackathon-may-2025
+cd global-agent-hackathon-may-2025/submissions/crypto-agent
 ```
 
 ---

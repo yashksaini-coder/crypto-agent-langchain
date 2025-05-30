@@ -3,7 +3,7 @@ import asyncio
 from datetime import datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from src.agent import TrenchCryptoAgent
+from src.agent import CryptoAgent
 from src.tools import CryptoNewsTool
 from src.utils.cache import RedisCache
 from config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, CRON_INTERVAL, LOG_LEVEL

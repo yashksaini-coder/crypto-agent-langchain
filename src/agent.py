@@ -14,9 +14,9 @@ from .utils.response_utils import parse_llm_response, fallback_response
 from .constants import GEMINI_FLASH, LLM_TEMPERATURE
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-class TrenchCryptoAgent:
+class CryptoAgent:
     def __init__(self, redis_host: str = "localhost", redis_port: int = 6379, redis_password: str = ""):
-        logger.info("Initializing TrenchCryptoAgent")
+        logger.info("Initializing CryptoAgent")
         
         self.cache = RedisCache(host=redis_host, port=redis_port, password=redis_password)
         
@@ -41,7 +41,7 @@ class TrenchCryptoAgent:
             convert_system_message_to_human=False,
         )
         
-        logger.info("TrenchCryptoAgent initialized successfully")
+        logger.info("CryptoAgent initialized successfully")
     
     def register_tool(self, tool: BaseTool) -> None:
         self.tools[tool.name] = tool
@@ -92,19 +92,19 @@ class TrenchCryptoAgent:
                 
                 if not valid_tools:
                     logger.warning(f"No valid tools selected, defaulting to crypto_search and twitter")
-                    # return [
-                    #     {"name": "crypto_search", "custom_input": query},
-                    #     {"name": "twitter", "custom_input": query}
-                    # ]
+                    return [
+                        {"name": "crypto_search", "custom_input": query},
+                        {"name": "twitter", "custom_input": query}
+                    ]
                 
                 logger.info(f"Selected tools: {', '.join([t.get('name') for t in valid_tools])} for query: '{query}'")
                 return valid_tools
             except json.JSONDecodeError as e:
                 logger.warning(f"Failed to parse JSON response: {str(e)}, defaulting to crypto_search and twitter")
-                # return [
-                #     {"name": "crypto_search", "custom_input": query},
-                #     {"name": "twitter", "custom_input": query}
-                # ]
+                return [
+                    {"name": "crypto_search", "custom_input": query},
+                    {"name": "twitter", "custom_input": query}
+                ]
                 
         except Exception as e:
             logger.error(f"Error selecting tools: {str(e)}", exc_info=True)
