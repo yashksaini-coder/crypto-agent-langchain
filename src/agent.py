@@ -55,7 +55,7 @@ class TrenchCryptoAgent:
                 for name, tool in self.tools.items()
             ])
             
-            prompt = TOOL_SELECTION_PROMPT.format(tool_descriptions=tool_descriptions)
+            prompt = TOOL_SELECTION_PROMPT.format(tools_needed=tool_descriptions)
             
             logger.debug(f"Sending tool selection prompt to LLM")
             response = self.llm.invoke([
@@ -92,19 +92,19 @@ class TrenchCryptoAgent:
                 
                 if not valid_tools:
                     logger.warning(f"No valid tools selected, defaulting to crypto_search and twitter")
-                    return [
-                        {"name": "crypto_search", "custom_input": query},
-                        {"name": "twitter", "custom_input": query}
-                    ]
+                    # return [
+                    #     {"name": "crypto_search", "custom_input": query},
+                    #     {"name": "twitter", "custom_input": query}
+                    # ]
                 
                 logger.info(f"Selected tools: {', '.join([t.get('name') for t in valid_tools])} for query: '{query}'")
                 return valid_tools
             except json.JSONDecodeError as e:
                 logger.warning(f"Failed to parse JSON response: {str(e)}, defaulting to crypto_search and twitter")
-                return [
-                    {"name": "crypto_search", "custom_input": query},
-                    {"name": "twitter", "custom_input": query}
-                ]
+                # return [
+                #     {"name": "crypto_search", "custom_input": query},
+                #     {"name": "twitter", "custom_input": query}
+                # ]
                 
         except Exception as e:
             logger.error(f"Error selecting tools: {str(e)}", exc_info=True)

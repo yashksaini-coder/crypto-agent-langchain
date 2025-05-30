@@ -1,8 +1,133 @@
-`pip install -r requirements.txt`
-`python main.py`
+# Crypto Agent - Local Development Setup Guide
+
+**Crypto Agent** is your AI-powered assistant for real-time crypto news, social sentiment, token analytics, and web search.  
+It leverages LLMs and a suite of specialized tools to deliver actionable insights for any crypto query.
+
+---
+
+## 1. Clone the Repository
+
+```sh
+git clone <your-repo-url>
+cd trench-ai
+```
+
+---
+
+## 2. Install Python & Dependencies
+
+- Requires **Python 3.10+** (3.12 recommended).
+- Install dependencies:
+
+```sh
+pip install -r requirements.txt
+```
+
+---
+
+## 3. Configure Environment Variables
+
+Create a `.env` file in your project root (or export these in your shell).
+
+**Required environment variables:**
+
+| Variable              | Description                                      | Example/Default                      |
+|-----------------------|--------------------------------------------------|--------------------------------------|
+| `GOOGLE_API_KEY`      | Google Generative AI API key                     | (your key)                           |
+| `RAPIDAPI_KEY`        | RapidAPI key for crypto news/search              | (your key)                           |
+| `RAPIDAPI_HOST`       | RapidAPI host for crypto news/search             | crypto-news51.p.rapidapi.com         |
+| `TWEETSCOUT_API_KEY`  | TweetScout API key for Twitter tool              | (your key)                           |
+| `TAVILY_API_KEY`      | Tavily API key for web search                    | (your key)                           |
+| `EXA_API_KEY`         | Exa API key for Exa web search                   | (your key)                           |
+| `REDIS_HOST`          | Redis host                                       | localhost                            |
+| `REDIS_PORT`          | Redis port                                       | 6379                                 |
+| `REDIS_DB`            | Redis DB index                                   | 0                                    |
+| `REDIS_PASSWORD`      | Redis password                                   | (blank by default)                   |
+| `LOG_LEVEL`           | Logging level                                    | INFO                                 |
+| `CACHE_TTL`           | Cache time-to-live (seconds)                     | 86400 (24h)                          |
+| `CRON_INTERVAL`       | Cache update interval (minutes)                  | 60                                   |
+| `API_RATE_LIMIT`      | API rate limit                                   | 100                                  |
+
+**Example `.env` file:**
+```
+GOOGLE_API_KEY=your_google_api_key
+RAPIDAPI_KEY=your_rapidapi_key
+TWEETSCOUT_API_KEY=your_tweetscout_key
+TAVILY_API_KEY=your_tavily_key
+EXA_API_KEY=your_exa_key
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_DB=0
+REDIS_PASSWORD=
+LOG_LEVEL=INFO
+CACHE_TTL=86400
+CRON_INTERVAL=60
+API_RATE_LIMIT=100
+```
+
+---
+
+## 4. Start Redis (Required for Caching)
+
+Make sure you have a Redis server running locally or accessible at the host/port you set above.
+
+- **Install Redis:**  
+  - On Mac: `brew install redis`
+  - On Ubuntu: `sudo apt-get install redis-server`
+  - On Windows: [Download from here](https://github.com/microsoftarchive/redis/releases)
+- **Start Redis:**  
+  ```sh
+  redis-server
+  ```
+
+---
+
+## 5. Run Crypto Agent
+
+```sh
+python main.py
+```
+
+- This will:
+  - Start the FastAPI server (default: http://localhost:8000)
+  - Start a background scheduler to keep the cache fresh
+
+---
+
+## 6. (Optional) Run with Docker
+
+If you prefer Docker:
+
+```sh
+docker build -t crypto-agent .
+docker run --env-file .env -p 8000:8000 crypto-agent
+```
+
+---
+
+## 7. Test the API
+
+- You can send requests to the FastAPI server (see below for sample input/output).
+- Example:
+  ```sh
+  curl -X POST http://localhost:8000/your-endpoint -H "Content-Type: application/json" -d '{"query": "web3 tools"}'
+  ```
+
+---
+
+## 8. Troubleshooting
+
+- **Missing API keys:** Make sure all required keys are set in your `.env`.
+- **Redis errors:** Ensure Redis is running and accessible.
+- **Dependency errors:** Run `pip install -r requirements.txt` again.
+- **Port conflicts:** Change the port in `main.py` or Docker if needed.
+
+---
 
 
-Sample input:
+## Example: Query and Response
+
+**Sample input:**
 ```json
 {
   "query": "how is monalisa doing?",
@@ -35,38 +160,6 @@ Sample input:
           "total_sol": "0.0200",
           "total_usd": "$2.66",
           "maker": "RRD1oj"
-        },
-        {
-          "type": "BUY",
-          "age": "5h",
-          "amount": "15M",
-          "total_sol": "0.29985",
-          "total_usd": "$39.85",
-          "maker": "5S6tDv"
-        },
-        {
-          "type": "SELL",
-          "age": "6h",
-          "amount": "797K",
-          "total_sol": "0.0155",
-          "total_usd": "$2.04",
-          "maker": "bvATGU"
-        },
-        {
-          "type": "SELL",
-          "age": "11h",
-          "amount": "1M",
-          "total_sol": "0.0289",
-          "total_usd": "$3.82",
-          "maker": "xw61Fn"
-        },
-        {
-          "type": "SELL",
-          "age": "1d",
-          "amount": "91K",
-          "total_sol": "0.0018",
-          "total_usd": "$0.21",
-          "maker": "FV2pGg"
         }
       ]
     }
@@ -74,57 +167,26 @@ Sample input:
 }
 ```
 
-
-sample output:
+**Sample output:**
 ```json
 {
   "query": "how is monalisa doing?",
-  "answer": "Okay, let's dive into how MONALISA is doing. Currently, it's priced at $0.052599, with a market cap of $2.60K and liquidity of $4.88K. Looking at the recent performance, it's flat over the last hour and 6 hours, but it's up 5% in the last 24 hours. Trading activity shows 4 transactions, with a total volume of $48, split evenly between buys and sells. The buy volume is slightly higher at $43 compared to the sell volume of $6. Recent trades include a couple of buys totaling around $42.51 and sells totaling around $5.86. Overall, the data suggests a micro-cap token with very low liquidity and trading volume. The tweets are a mixed bag, with some users promoting 'MONALISAChallenge' events and others mentioning it in the context of other tokens or memes. One tweet even references a Solana token, $Giza, alongside #jhope_MONALISA, indicating some association with the challenge.",
+  "answer": "Crypto Agent analysis: MONALISA is currently priced at $0.052599, with a $2.60K market cap and $4.88K liquidity. The last 24h shows a 5% gain, but trading volume and liquidity are very low, indicating a micro-cap token. Social media activity highlights the #MONALISAChallenge and some meme coin buzz, but overall, this is a highly speculative asset with limited market depth.",
   "sentiment": "Neutral",
-  "context": "Shows community engagement and marketing efforts around the token, potentially driving awareness. Indicates the token is being discussed in the context of other crypto opportunities and trends, though not necessarily driving value. Positions the token within the meme coin space, which can influence its volatility and appeal.",
+  "context": "Community engagement and marketing efforts are visible, but the token remains in the micro-cap, meme coin space.",
   "trending_topics": [
     "MONALISAChallenge",
     "Micro-cap token",
     "Low Liquidity",
-    "Social Media Engagement",
-    "jhope_MONALISA"
+    "Social Media Engagement"
   ],
   "articles": [
     {
       "title": "Tweet by @Solcaller1",
-      "summary": "Solana token $Giza just locked in a massive 355.91x gain! 🌕🚀\n\nStarted at a $2.20k market cap, and  to $783k 👇\n\nCome to my TG channel so you don't miss more opportunities. 💵\n\n#TolakRUUTNI #jhope_MONALISA #Crypto #LYKN #Solana #Memecoins #Trump #薬屋のひとりごと #Altcoins https://pbs.twimg.com/media/Gmlv1V-aEAIc4Tq.jpg\n\nQuoting @Solcaller1: Highlighted solana token $Giza at $2.2k Mcap in my private TG Channel.\n\n#TolakRUUTNI #JHOPE #SB19 #Solana #memecoins #CryptoPump #AltcoinsPump #Degen #PakistanCricket #LYKN https://pbs.twimg.com/media/GmlvjTXWAAAM2TQ.jpg",
-      "media": null,
+      "summary": "Solana token $Giza just locked in a massive 355.91x gain! ... #jhope_MONALISA ...",
       "link": "https://twitter.com/Solcaller1/status/1903175351863590989",
-      "authors": null,
-      "published": "Fri Mar 21 20:02:17 +0000 2025",
       "category": "Social Media",
-      "subCategory": "Twitter",
-      "language": null,
-      "timeZone": null
-    },
-    {
-      "title": "Tweet by @taesoothe",
-      "summary": "#MONALISAChallenge event for a special gift for 50 people 👀 and they accept not only tiktok but all major platforms, shorts, reels, and so... very nice https://video.twimg.com/ext_tw_video/1902966658055995392/pu/vid/avc1/320x568/b07XQA5kkUQZ8nfQ.mp4?tag=12\n\nQuoting @bts_bighit: [공지] j-hope 'MONA LISA' Dance Challenge EVENT 안내 (+ENG/JPN/CHN) \n\n🔗 https://weverse.io/bts/notice/25787\n\n#jhope #제이홉 #jhope_MONALISA #MONALISAChallenge",
-      "media": null,
-      "link": "https://twitter.com/taesoothe/status/1902966692256325986",
-      "authors": null,
-      "published": "Fri Mar 21 06:13:09 +0000 2025",
-      "category": "Social Media",
-      "subCategory": "Twitter",
-      "language": null,
-      "timeZone": null
-    },
-    {
-      "title": "Tweet by @CharizardTokenX",
-      "summary": "$CHAR\n\nDo you like the new Charalisa?\n\nDa Vinci would’ve been impressed..\n\n#charizard\n#memecoin\n#crypto\n#trump\n#elon\n#tate\n#michaelsaylor\n#monalisa https://pbs.twimg.com/media/GluMFmTXsAAqqja.jpg",
-      "media": null,
-      "link": "https://twitter.com/CharizardTokenX/status/1899265700453073147",
-      "authors": null,
-      "published": "Tue Mar 11 01:06:44 +0000 2025",
-      "category": "Social Media",
-      "subCategory": "Twitter",
-      "language": null,
-      "timeZone": null
+      "subCategory": "Twitter"
     }
   ],
   "article_analysis": [
@@ -132,18 +194,13 @@ sample output:
       "title": "Tweet by @taesoothe",
       "key_points": "Highlights the #MONALISAChallenge event across various social media platforms.",
       "significance": "Shows community engagement and marketing efforts around the token, potentially driving awareness."
-    },
-    {
-      "title": "Tweet by @Solcaller1",
-      "key_points": "Mentions #jhope_MONALISA alongside a Solana token $Giza.",
-      "significance": "Indicates the token is being discussed in the context of other crypto opportunities and trends, though not necessarily driving value."
-    },
-    {
-      "title": "Tweet by @CharizardTokenX",
-      "key_points": "References 'Charalisa' and includes hashtags like #memecoin and #crypto.",
-      "significance": "Positions the token within the meme coin space, which can influence its volatility and appeal."
     }
   ],
   "processed_at": "2025-04-13T14:31:58.453665"
 }
 ```
+
+---
+
+**Crypto Agent**  
+*Your AI-powered crypto research assistant. Real-time news, sentiment, and analytics—instantly.*
