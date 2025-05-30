@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+httpx
+redis
+pydantic
+python-dotenv
+google-generativeai
+langchain
+langchain-google-genai
+apscheduler
+dateparser
+python-dateutil
+datefinder
