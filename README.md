@@ -129,42 +129,11 @@ docker run --env-file .env -p 8000:8000 crypto-agent
 
 **Sample input:**
 ```json
-{
-  "query": "how is monalisa doing?",
-  "min_articles": 3,
-  "additional_context": {
-    "token_data": {
-      "token_name": "MONALISA",
-      "current_price_usd": 0.052599,
-      "market_cap": "$2.60K",
-      "liquidity": "$4.88K",
-      "total_supply": "1000M",
-      "performance": {
-        "1h": "0%",
-        "6h": "0%",
-        "24h": "+5%"
-      },
-      "trading_metrics": {
-        "transactions": 4,
-        "volume": "$48",
-        "buys": 2,
-        "sells": 2,
-        "buy_volume": "$43",
-        "sell_volume": "$6"
-      },
-      "recent_trades": [
-        {
-          "type": "BUY",
-          "age": "5h",
-          "amount": "993K",
-          "total_sol": "0.0200",
-          "total_usd": "$2.66",
-          "maker": "RRD1oj"
-        }
-      ]
-    }
+
+  {
+    "query":"What are the best perfoming coins right now ?",
+    "min_articles":5
   }
-}
 ```
 
 **Sample output:**
